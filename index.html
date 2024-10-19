@@ -30,21 +30,22 @@
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
+        import { GLTFLoader } from 'https://unpkg.com/three@0.126.0/examples/jsm/loaders/GLTFLoader.js';
 
         const products = [
             {
                 id: 1,
                 name: 'Velvet Chair',
-                image: 'chair.jpg',
+                image: 'images/chair.jpg',
                 description: 'Explore our stylish chair, perfect for any living space!',
-                model: 'chair.glb'
+                model: 'models/chair.glb'
             },
             {
                 id: 2,
                 name: 'Wall Art',
-                image: 'product2.jpg',
+                image: 'images/product2.jpg',
                 description: 'Stylish wall art for your home or office.',
-                model: 'art.glb'
+                model: 'models/art.glb'
             },
             // Add more products as needed
         ];
@@ -113,10 +114,13 @@
             }
 
             // Load the new model
-            const loader = new THREE.GLTFLoader();
+            const loader = new GLTFLoader();
             loader.load(modelPath, (gltf) => {
                 currentModel = gltf.scene;
+                currentModel.position.set(0, 0, -0.5); // Adjust position as needed
                 scene.add(currentModel);
+            }, undefined, (error) => {
+                console.error('An error occurred while loading the model:', error);
             });
         }
 
