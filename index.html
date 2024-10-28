@@ -5,7 +5,7 @@
     <title>AR Interactive Product Catalog</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link type="stylesheet" href="style.css">
+    <link type="text/css" rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
 </head>
 
@@ -112,6 +112,10 @@
             colorGreenButton.onclick = () => changeModelColor(0x00ff00); // Green
             colorBlackButton.onclick = () => changeModelColor(0x000000); // Black
             colorDefaultButton.onclick = () => changeModelColor(defaultColor); // Default
+
+            // Add event listeners for touch events
+            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
         }
 
         function showProductDetails(product) {
@@ -163,28 +167,11 @@
             }
         }
 
-        viewInArButton.onclick = () => {
-            // Start AR session
-            renderer.xr.enabled = true;
-
-            // Add event listeners for touch events when AR session starts
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-        };
-
-        backButton.onclick = () => {
-            productDetails.classList.add('hidden');
-            productList.classList.remove('hidden');
-            colorOptions.classList.add('hidden'); // Hide color options
-
-            // Remove touch event listeners when exiting AR session
-            renderer.domElement.removeEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.removeEventListener('touchmove', onTouchMove, false);
-        };
-
         function onTouchStart(event) {
             if (event.touches.length === 2) {
+                // Calculate the initial distance between the two touch points
                 initialDistance = getDistance(event.touches[0], event.touches[1]);
+                // Store the initial scale of the model
                 if (currentModel) {
                     initialScale.copy(currentModel.scale);
                 }
@@ -193,9 +180,12 @@
 
         function onTouchMove(event) {
             if (event.touches.length === 2 && initialDistance !== null) {
+                // Calculate the new distance between the two touch points
                 const newDistance = getDistance(event.touches[0], event.touches[1]);
+                // Calculate the scale factor
                 const scaleFactor = newDistance / initialDistance;
 
+                // Apply the scale factor to the model
                 if (currentModel) {
                     currentModel.scale.set(
                         initialScale.x * scaleFactor,
@@ -211,6 +201,17 @@
             const dy = touch1.pageY - touch2.pageY;
             return Math.sqrt(dx * dx + dy * dy);
         }
+
+        viewInArButton.onclick = () => {
+            // Start AR session
+            renderer.xr.enabled = true;
+        };
+
+        backButton.onclick = () => {
+            productDetails.classList.add('hidden');
+            productList.classList.remove('hidden');
+            colorOptions.classList.add('hidden'); // Hide color options
+        };
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
