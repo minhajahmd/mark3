@@ -168,54 +168,53 @@
             renderer.xr.enabled = true;
 
             // Add event listeners for touch events when AR session starts
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+            renderer.xr.addEventListener('sessionstart', onSessionStart);
         };
+
+        function onSessionStart() {
+            const session = renderer.xr.getSession();
+            session.addEventListener('inputsourceschange', onInputSourcesChange);
+        }
+
+        function onInputSourcesChange(event) {
+            const session = renderer.xr.getSession();
+            const inputSources = session.inputSources;
+
+            if (inputSources.length === 2) {
+                const [source1, source2] = inputSources;
+                const pos1 = source1.targetRaySpace.getPose(renderer.xr.getReferenceSpace());
+                const pos2 = source2.targetRaySpace.getPose(renderer.xr.getReferenceSpace());
+
+                if (pos1 && pos2) {
+                    const distance = getDistance(pos1.transform.position, pos2.transform.position);
+
+                    if (initialDistance === null) {
+                        initialDistance = distance;
+                        initialScale.copy(currentModel.scale);
+                    } else {
+                        const scaleFactor = distance / initialDistance;
+                        currentModel.scale.set(
+                            initialScale.x * scaleFactor,
+                            initialScale.y * scaleFactor,
+                            initialScale.z * scaleFactor
+                        );
+                    }
+                }
+            }
+        }
+
+        function getDistance(pos1, pos2) {
+            const dx = pos1.x - pos2.x;
+            const dy = pos1.y - pos2.y;
+            const dz = pos1.z - pos2.z;
+            return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        }
 
         backButton.onclick = () => {
             productDetails.classList.add('hidden');
             productList.classList.remove('hidden');
             colorOptions.classList.add('hidden'); // Hide color options
-
-            // Remove touch event listeners when exiting AR session
-            renderer.domElement.removeEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.removeEventListener('touchmove', onTouchMove, false);
         };
-
-        function onTouchStart(event) {
-            if (event.touches.length === 2) {
-                // Calculate the initial distance between the two touch points
-                initialDistance = getDistance(event.touches[0], event.touches[1]);
-                // Store the initial scale of the model
-                if (currentModel) {
-                    initialScale.copy(currentModel.scale);
-                }
-            }
-        }
-
-        function onTouchMove(event) {
-            if (event.touches.length === 2 && initialDistance !== null) {
-                // Calculate the new distance between the two touch points
-                const newDistance = getDistance(event.touches[0], event.touches[1]);
-                // Calculate the scale factor
-                const scaleFactor = newDistance / initialDistance;
-
-                // Apply the scale factor to the model
-                if (currentModel) {
-                    currentModel.scale.set(
-                        initialScale.x * scaleFactor,
-                        initialScale.y * scaleFactor,
-                        initialScale.z * scaleFactor
-                    );
-                }
-            }
-        }
-
-        function getDistance(touch1, touch2) {
-            const dx = touch1.pageX - touch2.pageX;
-            const dy = touch1.pageY - touch2.pageY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
