@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link type="text/css" rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
 </head>
 
 <body>
@@ -72,8 +73,6 @@
         let camera, scene, renderer;
         let currentModel;
         let defaultColor; // To store the default color
-        let initialDistance = null;
-        let initialScale = new THREE.Vector3();
 
         init();
         animate();
@@ -163,58 +162,30 @@
             }
         }
 
-        function onTouchStart(event) {
-            if (event.touches.length === 2) {
-                // Calculate the initial distance between the two touch points
-                initialDistance = getDistance(event.touches[0], event.touches[1]);
-                // Store the initial scale of the model
-                if (currentModel) {
-                    initialScale.copy(currentModel.scale);
-                }
-            }
-        }
-
-        function onTouchMove(event) {
-            if (event.touches.length === 2 && initialDistance !== null) {
-                // Calculate the new distance between the two touch points
-                const newDistance = getDistance(event.touches[0], event.touches[1]);
-                // Calculate the scale factor
-                const scaleFactor = newDistance / initialDistance;
-
-                // Apply the scale factor to the model
-                if (currentModel) {
-                    currentModel.scale.set(
-                        initialScale.x * scaleFactor,
-                        initialScale.y * scaleFactor,
-                        initialScale.z * scaleFactor
-                    );
-                }
-            }
-        }
-
-        function getDistance(touch1, touch2) {
-            const dx = touch1.pageX - touch2.pageX;
-            const dy = touch1.pageY - touch2.pageY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
         viewInArButton.onclick = () => {
             // Start AR session
             renderer.xr.enabled = true;
 
-            // Add event listeners for touch events when AR session starts
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+            // Initialize Hammer.js for pinch gestures
+            const hammer = new Hammer(renderer.domElement);
+            hammer.get('pinch').set({ enable: true });
+
+            hammer.on('pinch', (event) => {
+                if (currentModel) {
+                    const scaleFactor = event.scale;
+                    currentModel.scale.set(
+                        currentModel.scale.x * scaleFactor,
+                        currentModel.scale.y * scaleFactor,
+                        currentModel.scale.z * scaleFactor
+                    );
+                }
+            });
         };
 
         backButton.onclick = () => {
             productDetails.classList.add('hidden');
             productList.classList.remove('hidden');
             colorOptions.classList.add('hidden'); // Hide color options
-
-            // Remove touch event listeners when exiting AR session
-            renderer.domElement.removeEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.removeEventListener('touchmove', onTouchMove, false);
         };
 
         function onWindowResize() {
