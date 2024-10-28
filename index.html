@@ -142,9 +142,14 @@
         function changeModelColor(color) {
             if (currentModel) {
                 currentModel.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material.color.set(color);
-                    }
+            if (child.isMesh) {
+                // Ensure the material supports color tinting
+                if (child.material) {
+                    // Set the color as a tint
+                    child.material.color.set(color);
+                    child.material.needsUpdate = true;
+                }
+            }
                 });
             }
         }
