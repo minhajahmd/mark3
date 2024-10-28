@@ -112,10 +112,6 @@
             colorGreenButton.onclick = () => changeModelColor(0x00ff00); // Green
             colorBlackButton.onclick = () => changeModelColor(0x000000); // Black
             colorDefaultButton.onclick = () => changeModelColor(defaultColor); // Default
-
-            // Add event listeners for touch events
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
         }
 
         function showProductDetails(product) {
@@ -205,12 +201,20 @@
         viewInArButton.onclick = () => {
             // Start AR session
             renderer.xr.enabled = true;
+
+            // Add event listeners for touch events when AR session starts
+            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
         };
 
         backButton.onclick = () => {
             productDetails.classList.add('hidden');
             productList.classList.remove('hidden');
             colorOptions.classList.add('hidden'); // Hide color options
+
+            // Remove touch event listeners when exiting AR session
+            renderer.domElement.removeEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.removeEventListener('touchmove', onTouchMove, false);
         };
 
         function onWindowResize() {
