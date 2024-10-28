@@ -132,9 +132,9 @@
             const loader = new GLTFLoader();
             loader.load(modelPath, (gltf) => {
                 currentModel = gltf.scene;
-                currentModel.position.set(0, 0, -2.5); // Adjust position as needed
+                currentModel.position.set(0, -3, -1.5); // Adjust position as needed
                         // Adjust the scale of the model
-                currentModel.scale.set(1, 1, 1); // Example scale for a chair
+                currentModel.scale.set(0.5, 0.5, 0.5); // Example scale for a chair
                 scene.add(currentModel);
             }, undefined, (error) => {
                 console.error('An error occurred while loading the model:', error);
