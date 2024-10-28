@@ -28,10 +28,11 @@
         <button id="back-button">Back to Catalog</button>
     </section>
 
-    <!-- Color Picker UI -->
-    <div id="color-picker" class="hidden">
-        <label for="color-input">Choose a color:</label>
-        <input type="color" id="color-input" name="color-input" value="#ff0000">
+    <!-- Color Selection UI -->
+    <div id="color-options" class="hidden">
+        <button id="color-green">Green</button>
+        <button id="color-black">Black</button>
+        <button id="color-default">Default</button>
     </div>
 
     <script type="module">
@@ -63,11 +64,14 @@
         const productDescription = document.getElementById('product-description');
         const viewInArButton = document.getElementById('view-in-ar-button');
         const backButton = document.getElementById('back-button');
-        const colorPicker = document.getElementById('color-picker');
-        const colorInput = document.getElementById('color-input');
+        const colorOptions = document.getElementById('color-options');
+        const colorGreenButton = document.getElementById('color-green');
+        const colorBlackButton = document.getElementById('color-black');
+        const colorDefaultButton = document.getElementById('color-default');
 
         let camera, scene, renderer;
         let currentModel;
+        let defaultColor; // To store the default color
 
         init();
         animate();
@@ -103,10 +107,9 @@
             });
 
             // Handle color change
-            colorInput.addEventListener('input', (event) => {
-                const color = event.target.value;
-                changeModelColor(color);
-            });
+            colorGreenButton.onclick = () => changeModelColor(0x00ff00); // Green
+            colorBlackButton.onclick = () => changeModelColor(0x000000); // Black
+            colorDefaultButton.onclick = () => changeModelColor(defaultColor); // Default
         }
 
         function showProductDetails(product) {
@@ -119,7 +122,7 @@
 
             productDetails.classList.remove('hidden');
             productList.classList.add('hidden');
-            colorPicker.classList.remove('hidden'); // Show color picker
+            colorOptions.classList.remove('hidden'); // Show color options
         }
 
         function loadModel(modelPath) {
@@ -132,7 +135,16 @@
             const loader = new GLTFLoader();
             loader.load(modelPath, (gltf) => {
                 currentModel = gltf.scene;
-                currentModel.position.set(0, -0.5, -0.5); // Adjust position as needed
+                currentModel.position.set(0, -0.5, -1); // Adjust position as needed
+                currentModel.scale.set(0.5, 0.5, 0.5); // Adjust scale as needed
+
+                // Store the default color
+                currentModel.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        defaultColor = child.material.color.getHex();
+                    }
+                });
+
                 scene.add(currentModel);
             }, undefined, (error) => {
                 console.error('An error occurred while loading the model:', error);
@@ -142,14 +154,10 @@
         function changeModelColor(color) {
             if (currentModel) {
                 currentModel.traverse((child) => {
-            if (child.isMesh) {
-                // Ensure the material supports color tinting
-                if (child.material) {
-                    // Set the color as a tint
-                    child.material.color.set(color);
-                    child.material.needsUpdate = true;
-                }
-            }
+                    if (child.isMesh && child.material) {
+                        child.material.color.set(color);
+                        child.material.needsUpdate = true;
+                    }
                 });
             }
         }
@@ -162,7 +170,7 @@
         backButton.onclick = () => {
             productDetails.classList.add('hidden');
             productList.classList.remove('hidden');
-            colorPicker.classList.add('hidden'); // Hide color picker
+            colorOptions.classList.add('hidden'); // Hide color options
         };
 
         function onWindowResize() {
