@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link type="text/css" rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -27,6 +27,12 @@
         <button id="view-in-ar-button">View in AR</button>
         <button id="back-button">Back to Catalog</button>
     </section>
+
+    <!-- Color Picker UI -->
+    <div id="color-picker" class="hidden">
+        <label for="color-input">Choose a color:</label>
+        <input type="color" id="color-input" name="color-input" value="#ff0000">
+    </div>
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
@@ -57,6 +63,8 @@
         const productDescription = document.getElementById('product-description');
         const viewInArButton = document.getElementById('view-in-ar-button');
         const backButton = document.getElementById('back-button');
+        const colorPicker = document.getElementById('color-picker');
+        const colorInput = document.getElementById('color-input');
 
         let camera, scene, renderer;
         let currentModel;
@@ -93,6 +101,12 @@
                 li.onclick = () => showProductDetails(product);
                 productList.appendChild(li);
             });
+
+            // Handle color change
+            colorInput.addEventListener('input', (event) => {
+                const color = event.target.value;
+                changeModelColor(color);
+            });
         }
 
         function showProductDetails(product) {
@@ -105,6 +119,7 @@
 
             productDetails.classList.remove('hidden');
             productList.classList.add('hidden');
+            colorPicker.classList.remove('hidden'); // Show color picker
         }
 
         function loadModel(modelPath) {
@@ -124,6 +139,16 @@
             });
         }
 
+        function changeModelColor(color) {
+            if (currentModel) {
+                currentModel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material.color.set(color);
+                    }
+                });
+            }
+        }
+
         viewInArButton.onclick = () => {
             // Start AR session
             renderer.xr.enabled = true;
@@ -132,6 +157,7 @@
         backButton.onclick = () => {
             productDetails.classList.add('hidden');
             productList.classList.remove('hidden');
+            colorPicker.classList.add('hidden'); // Hide color picker
         };
 
         function onWindowResize() {
