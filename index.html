@@ -68,13 +68,12 @@
 
     <nav>
         <ul id="product-list">
-            <!-- Product items will be dynamically inserted here -->
         </ul>
     </nav>
 
     <section id="product-details">
         <h2 id="product-name"></h2>
-        <img id="product-image" alt="Product Image">
+        <img id="product-image" alt="Product Image" style="width: 40%;">
         <p id="product-description"></p>
 
         <!-- Color Selection UI -->
@@ -83,8 +82,6 @@
             <button id="color-green">Dark Green</button>
             <button id="color-black">Black</button>
         </div>
-
-        <button id="view-in-ar-button">View in AR</button>
         <button id="back-button">Back to Catalog</button>
     </section>
 
@@ -98,16 +95,37 @@
             {
                 id: 1,
                 name: 'Velvet Chair',
-                image: 'chair.jpg',
+                image: 'chair.png',
                 description: 'Explore our stylish chair, perfect for any living space!',
                 model: 'chair.glb'
             },
             {
                 id: 2,
                 name: 'Wall Art',
-                image: 'images/product2.jpg',
-                description: 'Stylish wall art for your home or office.',
-                model: 'models/art.glb'
+                image: 'wall_art.jpg',
+                description: 'Transform your blank walls into captivating stories.',
+                model: 'wall_art.glb'
+            },
+            {
+                id: 3,
+                name: 'Table Lamp',
+                image: 'images/table_lamp.jpg',
+                description: 'Light up your space with style and charm.',
+                model: 'lamp.glb'
+            },
+            {
+                id: 4,
+                name: 'Furniture',
+                image: 'furniture.jpg',
+                description: 'Functional elegance designed to fit your life.',
+                model: 'furniture.glb'
+            },
+            {
+                id: 5,
+                name: 'Vase',
+                image: 'vase.jpg',
+                description: 'A centerpiece that blooms with timeless beauty.',
+                model: 'vase.glb'
             },
             // Add more products as needed
         ];
