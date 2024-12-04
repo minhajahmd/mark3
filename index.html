@@ -33,25 +33,29 @@
     </header>
 
     <nav>
-        <ul id="product-list">
+        <ul id="product-list" style="padding-left: 40px; width: 250px;">
             <!-- Product items will be dynamically inserted here -->
         </ul>
     </nav>
 
-    <section id="product-details">
+    <section id="product-details" style="display: block; padding-left: 40px;">
         <h2 id="product-name"></h2>
         <img id="product-image" alt="Product Image" style="width: 300px; height: 300px;">
         <p id="product-description"></p>
+
+    <!-- Color Selection UI  -->
+    <div id="color-options">
+        <button id="color-default" style="transform: scale(1.2);">Blue</button>
+        <button id="color-green" style="transform: scale(1.2); margin-left: 30px;">Dark Green</button>
+        <button id="color-black" style="transform: scale(1.2); margin-left: 30px;">Black</button>
+
+    </div>
+
         <button id="view-in-ar-button">View in AR</button>
         <button id="back-button">Back to Catalog</button>
     </section>
 
-    <!-- Color Selection UI -->
-    <div id="color-options">
-        <button id="color-green">Dark Green</button>
-        <button id="color-black">Black</button>
-        <button id="color-default">Blue</button>
-    </div>
+
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
