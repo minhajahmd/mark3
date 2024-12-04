@@ -22,7 +22,7 @@
         }
 
         /* Hide product details and color options by default */
-        #product-details, #color-options {
+        #product-details, #color-options, #view-in-ar-button, #back-button {
             display: none;
         }
     </style>
@@ -38,24 +38,21 @@
         </ul>
     </nav>
 
-    <section id="product-details" style="display: block; padding-left: 40px;">
+    <section id="product-details" style="padding-left: 40px;">
         <h2 id="product-name"></h2>
         <img id="product-image" alt="Product Image" style="width: 300px; height: 300px;">
         <p id="product-description"></p>
 
-    <!-- Color Selection UI  -->
-    <div id="color-options">
-        <button id="color-default" style="transform: scale(1.2);">Blue</button>
-        <button id="color-green" style="transform: scale(1.2); margin-left: 30px;">Dark Green</button>
-        <button id="color-black" style="transform: scale(1.2); margin-left: 30px;">Black</button>
-
-    </div>
+        <!-- Color Selection UI -->
+        <div id="color-options">
+            <button id="color-default" style="transform: scale(1.2);">Blue</button>
+            <button id="color-green" style="transform: scale(1.2); margin-left: 30px;">Dark Green</button>
+            <button id="color-black" style="transform: scale(1.2); margin-left: 30px;">Black</button>
+        </div>
 
         <button id="view-in-ar-button">View in AR</button>
         <button id="back-button">Back to Catalog</button>
     </section>
-
-
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
@@ -151,6 +148,8 @@
             productDetails.style.display = 'block';
             productList.style.display = 'none';
             colorOptions.style.display = 'block'; // Show color options
+            viewInArButton.style.display = 'block'; // Show AR button
+            backButton.style.display = 'block'; // Show back button
         }
 
         function loadModel(modelPath) {
@@ -233,6 +232,8 @@
             productDetails.style.display = 'none';
             productList.style.display = 'block';
             colorOptions.style.display = 'none'; // Hide color options
+            viewInArButton.style.display = 'none'; // Hide AR button
+            backButton.style.display = 'none'; // Hide back button
         };
 
         function onWindowResize() {
