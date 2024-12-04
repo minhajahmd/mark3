@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link type="text/css" rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
@@ -42,16 +41,15 @@
             <a-asset-item id="model" src=""></a-asset-item>
         </a-assets>
 
-        <a-entity id="modelEntity" gltf-model="#model" scale="1 1 1" position="0 0 0">
-        </a-entity>
+        <a-marker preset="hiro">
+            <a-entity id="modelEntity" gltf-model="#model" scale="1 1 1" position="0 0 0">
+            </a-entity>
+        </a-marker>
 
         <a-camera-static></a-camera-static>
     </a-scene>
 
-    <script type="module">
-        import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
-        import { GLTFLoader } from 'https://unpkg.com/three@0.126.0/examples/jsm/loaders/GLTFLoader.js';
-
+    <script>
         const products = [
             {
                 id: 1,
@@ -82,137 +80,25 @@
         const colorBlackButton = document.getElementById('color-black');
         const colorDefaultButton = document.getElementById('color-default');
 
-        let camera, scene, renderer;
-        let currentModel;
-        let defaultColor; // To store the default color
-        let initialDistance = null;
-        let initialScale = new THREE.Vector3();
+        let currentModelPath = '';
 
-        init();
-        animate();
-
-        function init() {
-            const container = document.createElement('div');
-            document.body.appendChild(container);
-
-            scene = new THREE.Scene();
-
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;
-            container.appendChild(renderer.domElement);
-
-            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-            light.position.set(0.5, 1, 0.25);
-            scene.add(light);
-
-            document.body.appendChild(ARButton.createButton(renderer));
-
-            window.addEventListener('resize', onWindowResize, false);
-
-            // Display product list dynamically
-            products.forEach(product => {
-                const li = document.createElement('li');
-                li.textContent = product.name;
-                li.onclick = () => showProductDetails(product);
-                productList.appendChild(li);
-            });
-
-            // Handle color change
-            colorGreenButton.onclick = () => changeModelColor(0x00ff00); // Green
-            colorBlackButton.onclick = () => changeModelColor(0x000000); // Black
-            colorDefaultButton.onclick = () => changeModelColor(defaultColor); // Default
-
-            // Add event listeners for touch events
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
-        }
+        // Display product list dynamically
+        products.forEach(product => {
+            const li = document.createElement('li');
+            li.textContent = product.name;
+            li.onclick = () => showProductDetails(product);
+            productList.appendChild(li);
+        });
 
         function showProductDetails(product) {
             productName.textContent = product.name;
             productImage.src = product.image;
             productDescription.textContent = product.description;
-
-            // Load the model for AR
-            loadModel(product.model);
+            currentModelPath = product.model;
 
             productDetails.classList.remove('hidden');
             productList.classList.add('hidden');
             colorOptions.classList.remove('hidden'); // Show color options
-        }
-
-        function loadModel(modelPath) {
-            // Remove the current model if it exists
-            if (currentModel) {
-                scene.remove(currentModel);
-            }
-
-            // Load the new model
-            const loader = new GLTFLoader();
-            loader.load(modelPath, (gltf) => {
-                currentModel = gltf.scene;
-                currentModel.position.set(0, -0.5, -0.5); // Adjust position as needed
-
-                // Store the default color
-                currentModel.traverse((child) => {
-                    if (child.isMesh && child.material) {
-                        defaultColor = child.material.color.getHex();
-                    }
-                });
-
-                scene.add(currentModel);
-            }, undefined, (error) => {
-                console.error('An error occurred while loading the model:', error);
-            });
-        }
-
-        function changeModelColor(color) {
-            if (currentModel) {
-                currentModel.traverse((child) => {
-                    if (child.isMesh && child.material) {
-                        child.material.color.set(color);
-                        child.material.needsUpdate = true;
-                    }
-                });
-            }
-        }
-
-        function onTouchStart(event) {
-            if (event.touches.length === 2) {
-                // Calculate the initial distance between the two touch points
-                initialDistance = getDistance(event.touches[0], event.touches[1]);
-                // Store the initial scale of the model
-                if (currentModel) {
-                    initialScale.copy(currentModel.scale);
-                }
-            }
-        }
-
-        function onTouchMove(event) {
-            if (event.touches.length === 2 && initialDistance !== null) {
-                // Calculate the new distance between the two touch points
-                const newDistance = getDistance(event.touches[0], event.touches[1]);
-                // Calculate the scale factor
-                const scaleFactor = newDistance / initialDistance;
-
-                // Apply the scale factor to the model
-                if (currentModel) {
-                    currentModel.scale.set(
-                        initialScale.x * scaleFactor,
-                        initialScale.y * scaleFactor,
-                        initialScale.z * scaleFactor
-                    );
-                }
-            }
-        }
-
-        function getDistance(touch1, touch2) {
-            const dx = touch1.pageX - touch2.pageX;
-            const dy = touch1.pageY - touch2.pageY;
-            return Math.sqrt(dx * dx + dy * dy);
         }
 
         viewInArButton.onclick = () => {
@@ -221,39 +107,29 @@
                 navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
                     if (supported) {
                         // Start WebXR AR session
-                        renderer.xr.enabled = true;
+                        alert("WebXR is supported, but this example uses AR.js for simplicity.");
                     } else {
                         // Fallback to AR.js
-                        document.querySelector('a-scene').style.display = 'block';
-                        document.querySelector('a-asset-item').setAttribute('src', currentModelPath);
+                        startARjs();
                     }
                 });
             } else {
                 // Fallback to AR.js
-                document.querySelector('a-scene').style.display = 'block';
-                document.querySelector('a-asset-item').setAttribute('src', currentModelPath);
+                startARjs();
             }
         };
+
+        function startARjs() {
+            const aScene = document.querySelector('a-scene');
+            aScene.style.display = 'block';
+            document.querySelector('#model').setAttribute('src', currentModelPath);
+        }
 
         backButton.onclick = () => {
             productDetails.classList.add('hidden');
             productList.classList.remove('hidden');
             colorOptions.classList.add('hidden'); // Hide color options
         };
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            renderer.setAnimationLoop(render);
-        }
-
-        function render() {
-            renderer.render(scene, camera);
-        }
     </script>
 </body>
 
