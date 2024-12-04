@@ -11,11 +11,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Prevent scrolling */
+            overflow-y: auto; /* Allow vertical scrolling */
         }
 
         header, nav, section {
@@ -54,8 +54,8 @@
 
         #renderer-container {
             width: 100%;
-            max-width: 300px; /* Adjust as needed */
-            height: auto;
+            max-width: 600px;
+            height: 300px; /* Fixed height for the renderer */
             margin: 20px 0;
         }
     </style>
@@ -87,7 +87,7 @@
         <button id="back-button">Back to Catalog</button>
     </section>
 
-    <div id="renderer-container"></div>
+    <div id="renderer-container"></div> <!-- Container for the renderer -->
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
@@ -136,13 +136,13 @@
         function init() {
             scene = new THREE.Scene();
 
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+            camera = new THREE.PerspectiveCamera(70, rendererContainer.clientWidth / rendererContainer.clientHeight, 0.01, 40);
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setPixelRatio(window.devicePixelRatio);
 
-            // Set the renderer size to 50% of the container's width and height
-            renderer.setSize(rendererContainer.clientWidth, rendererContainer.clientWidth * 0.5);
+            // Set the renderer size to fit the container
+            renderer.setSize(rendererContainer.clientWidth, rendererContainer.clientHeight);
             renderer.xr.enabled = true;
             rendererContainer.appendChild(renderer.domElement);
 
@@ -272,9 +272,9 @@
         };
 
         function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.aspect = rendererContainer.clientWidth / rendererContainer.clientHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(rendererContainer.clientWidth, rendererContainer.clientWidth * 0.5); // Adjust size on resize
+            renderer.setSize(rendererContainer.clientWidth, rendererContainer.clientHeight); // Adjust size on resize
         }
 
         function animate() {
