@@ -15,6 +15,7 @@
             min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevent scrolling */
         }
 
         header, nav, section {
@@ -50,6 +51,13 @@
             transform: scale(1.2);
             margin: 10px;
         }
+
+        #renderer-container {
+            width: 100%;
+            max-width: 300px; /* Adjust as needed */
+            height: auto;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -78,6 +86,8 @@
         <button id="view-in-ar-button">View in AR</button>
         <button id="back-button">Back to Catalog</button>
     </section>
+
+    <div id="renderer-container"></div>
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
@@ -112,6 +122,7 @@
         const colorGreenButton = document.getElementById('color-green');
         const colorBlackButton = document.getElementById('color-black');
         const colorDefaultButton = document.getElementById('color-default');
+        const rendererContainer = document.getElementById('renderer-container');
 
         let camera, scene, renderer;
         let currentModel;
@@ -123,18 +134,17 @@
         animate();
 
         function init() {
-            const container = document.createElement('div');
-            document.body.appendChild(container);
-
             scene = new THREE.Scene();
 
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Set the renderer size to 50% of the container's width and height
+            renderer.setSize(rendererContainer.clientWidth, rendererContainer.clientWidth * 0.5);
             renderer.xr.enabled = true;
-            container.appendChild(renderer.domElement);
+            rendererContainer.appendChild(renderer.domElement);
 
             const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
             light.position.set(0.5, 1, 0.25);
@@ -264,7 +274,7 @@
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(rendererContainer.clientWidth, rendererContainer.clientWidth * 0.5); // Adjust size on resize
         }
 
         function animate() {
