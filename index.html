@@ -132,9 +132,7 @@
 
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setPixelRatio(window.devicePixelRatio);
-
-            // Set the renderer size to 50% of the window's width and height
-            renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5);
+            renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
 
@@ -266,7 +264,7 @@
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth * 0.5, window.innerHeight * 0.5); // Adjust size on resize
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         function animate() {
