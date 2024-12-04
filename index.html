@@ -7,7 +7,23 @@
     <link type="text/css" rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
     <style>
-        /* Style for product list items */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header, nav, section {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            margin: 10px 0;
+        }
+
         #product-list li {
             border: 1px solid #ccc;
             padding: 10px;
@@ -21,9 +37,18 @@
             background-color: #f0f0f0;
         }
 
-        /* Hide product details and color options by default */
         #product-details, #color-options, #view-in-ar-button, #back-button {
             display: none;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        button {
+            transform: scale(1.2);
+            margin: 10px;
         }
     </style>
 </head>
@@ -33,21 +58,21 @@
     </header>
 
     <nav>
-        <ul id="product-list" style="padding-left: 40px; width: 250px;">
+        <ul id="product-list">
             <!-- Product items will be dynamically inserted here -->
         </ul>
     </nav>
 
-    <section id="product-details" style="padding-left: 40px;">
+    <section id="product-details">
         <h2 id="product-name"></h2>
-        <img id="product-image" alt="Product Image" style="width: 300px; height: 300px;">
+        <img id="product-image" alt="Product Image">
         <p id="product-description"></p>
 
         <!-- Color Selection UI -->
         <div id="color-options">
-            <button id="color-default" style="transform: scale(1.2);">Blue</button>
-            <button id="color-green" style="transform: scale(1.2); margin-left: 30px;">Dark Green</button>
-            <button id="color-black" style="transform: scale(1.2); margin-left: 30px;">Black</button>
+            <button id="color-default">Blue</button>
+            <button id="color-green">Dark Green</button>
+            <button id="color-black">Black</button>
         </div>
 
         <button id="view-in-ar-button">View in AR</button>
