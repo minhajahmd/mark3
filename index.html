@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link type="text/css" rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 </head>
 
 <body>
@@ -30,10 +32,21 @@
 
     <!-- Color Selection UI -->
     <div id="color-options" class="hidden">
-        <button id="color-green">Green</button>
+        <button id="color-green">Dark Green</button>
         <button id="color-black">Black</button>
-        <button id="color-default">Default</button>
+        <button id="color-default">Blue</button>
     </div>
+
+    <a-scene embedded arjs="sourceType: webcam;" style="display: none;">
+        <a-assets>
+            <a-asset-item id="model" src=""></a-asset-item>
+        </a-assets>
+
+        <a-entity id="modelEntity" gltf-model="#model" scale="1 1 1" position="0 0 0">
+        </a-entity>
+
+        <a-camera-static></a-camera-static>
+    </a-scene>
 
     <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
@@ -203,8 +216,23 @@
         }
 
         viewInArButton.onclick = () => {
-            // Start AR session
-            renderer.xr.enabled = true;
+            // Check if WebXR is supported
+            if (navigator.xr && navigator.xr.isSessionSupported) {
+                navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+                    if (supported) {
+                        // Start WebXR AR session
+                        renderer.xr.enabled = true;
+                    } else {
+                        // Fallback to AR.js
+                        document.querySelector('a-scene').style.display = 'block';
+                        document.querySelector('a-asset-item').setAttribute('src', currentModelPath);
+                    }
+                });
+            } else {
+                // Fallback to AR.js
+                document.querySelector('a-scene').style.display = 'block';
+                document.querySelector('a-asset-item').setAttribute('src', currentModelPath);
+            }
         };
 
         backButton.onclick = () => {
