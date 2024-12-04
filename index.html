@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>AR Interactive Product Catalog</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link type="text/css" rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.min.js" crossorigin="anonymous"></script>
-</head>
+    <style>
+        /* Style for product list items */
+        #product-list li {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            list-style-type: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
+        #product-list li:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Hide product details and color options by default */
+        #product-details, #color-options {
+            display: none;
+        }
+    </style>
+</head>
 <body>
     <header>
         <h1>AR Interactive Product Catalog</h1>
@@ -20,7 +38,7 @@
         </ul>
     </nav>
 
-    <section id="product-details" class="hidden">
+    <section id="product-details">
         <h2 id="product-name"></h2>
         <img id="product-image" alt="Product Image" style="width: 300px; height: 300px;">
         <p id="product-description"></p>
@@ -29,7 +47,7 @@
     </section>
 
     <!-- Color Selection UI -->
-    <div id="color-options" class="hidden">
+    <div id="color-options">
         <button id="color-green">Dark Green</button>
         <button id="color-black">Black</button>
         <button id="color-default">Blue</button>
@@ -126,9 +144,9 @@
             // Load the model for AR
             loadModel(product.model);
 
-            productDetails.classList.remove('hidden');
-            productList.classList.add('hidden');
-            colorOptions.classList.remove('hidden'); // Show color options
+            productDetails.style.display = 'block';
+            productList.style.display = 'none';
+            colorOptions.style.display = 'block'; // Show color options
         }
 
         function loadModel(modelPath) {
@@ -208,9 +226,9 @@
         };
 
         backButton.onclick = () => {
-            productDetails.classList.add('hidden');
-            productList.classList.remove('hidden');
-            colorOptions.classList.add('hidden'); // Hide color options
+            productDetails.style.display = 'none';
+            productList.style.display = 'block';
+            colorOptions.style.display = 'none'; // Hide color options
         };
 
         function onWindowResize() {
@@ -228,5 +246,4 @@
         }
     </script>
 </body>
-
 </html>
